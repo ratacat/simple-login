@@ -2,6 +2,7 @@ var express = require('express'),
     bodyParser = require('body-parser'),
     session = require('express-session'),
     db = require('./models'),
+    path = require('path'),
     app = express();
 
 app.use(bodyParser.urlencoded({extended: true}))
@@ -11,16 +12,18 @@ app.use(session({
 	saveUninitialized: true
 }));
 
+var views = path.join(process.cwd(), "views");
+
 app.use("/", function (req, res, next) {
 
   req.login = function (user) {
-    req.session.userId = user.id;
+    req.session.userId = user._id;
   };
 
   req.currentUser = function (cb) {
      db.User.
       findOne({
-          id: req.session.userId
+          _id: req.session.userId
       },
       function (err, user) {
         req.user = user;
@@ -53,11 +56,24 @@ app.post("/users", function(req,res) {
 app.post("/login", function (req, res) {
 	var user = req.body.user;
 
-	db.User.authenticate(user.email,user.password,
+	db.User.authenticate(user.email, user.password,
 		function(err,user) {
 			console.log(user + "logging in");
-			res.send("logged in!");
+			req.login(user);
+			res.redirect("/profile");
+			//res.send("logged in!");
 		});
+});
+
+app.get("/profile", function(req,res) {
+	//we want to display current user's profile information
+	req.currentUser(function(err,user) {
+		res.send(user);
+	});
+});
+
+app.get("/login", function(req,res) {
+	res.sendFile(path.join(views,"login.html"));
 });
 
 app.listen(3000, function () {
