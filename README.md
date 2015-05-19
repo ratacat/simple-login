@@ -511,3 +511,4 @@ app.get("/profile", function (req, res) {
 
 1. Add a `GET /signup` route and view.
 2. Login a user after `signup` and redirect to a `/profile` page.
+  
