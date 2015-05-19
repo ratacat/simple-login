@@ -10,7 +10,11 @@ app.get("/signup", function (req, res) {
 
 //is accepting a form post with creds and authenticate account
 app.post("/login", function (req, res) {
-
+	db.User.authenticate(user.email,user.password,
+		function(err,user) {
+			console.log("logging in");
+			res.send("logged in!");
+		});
 });
 
 app.listen(3000, function () {
