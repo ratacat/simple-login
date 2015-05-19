@@ -4,7 +4,9 @@ var mongoose = require("mongoose");
 
 var userSchema = new mongoose.Schema({
   email: String,
-  passwordDigest: String
+  passwordDigest: String,
+  firstname: String,
+  lastname: String
 });
 
 // SIGN UP
@@ -35,7 +37,7 @@ userSchema.statics.encryptPassword = function (password) {
 
 
 userSchema.statics.authenticate = function(email, password, cb) {
-  this.find({
+  this.findOne({
      email: email
     }, 
     function(err, user){
